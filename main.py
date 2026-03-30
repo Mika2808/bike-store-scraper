@@ -6,8 +6,10 @@ from bs4 import BeautifulSoup
 import json
 
 def load_gravels_from_page(i):
+    # stworzenie odpowiedniego url
     url = f"https://www.centrumrowerowe.pl/rowery/gravel/?page={i}"
 
+    # odpalenie drivera
     driver = webdriver.Chrome()
     driver.get(url)
 
@@ -21,6 +23,7 @@ def load_gravels_from_page(i):
 
     soup = BeautifulSoup(html_content, "html.parser")
 
+    # pobranie rowerów i danych o nich
     products = []
 
     for item_div in soup.select("div.item.product"):
@@ -37,13 +40,16 @@ def load_gravels_from_page(i):
     with open("rowery.json", "a", encoding="utf-8") as f:
         json.dump(products, f, ensure_ascii=False, indent=4)
 
+    # info
     print(f"Pobrano {len(products)} produktów")
 
 # Centrum Rowerowe 
 def centrum_rowerowe():
 
+    # pobranie html z kategorii gravele
     url = f"https://www.centrumrowerowe.pl/rowery/gravel/"
 
+    # uruchomienie drivera (stronka z ajaxem)
     driver = webdriver.Chrome()
     driver.get(url)
 
@@ -52,10 +58,15 @@ def centrum_rowerowe():
         EC.presence_of_element_located((By.CLASS_NAME, "item.product"))
     )
 
+    # pobranie contentu po załdowaniu się strony
     html_content = driver.page_source
+
+    # wyłączenie drivera
     driver.quit()
 
     soup = BeautifulSoup(html_content, "html.parser")
+    
+    # pobranie stron z pagination
     pages = []
 
     for el in soup.select(".pagination li"):
@@ -63,10 +74,13 @@ def centrum_rowerowe():
         if text.isdigit():
             pages.append(int(text))
 
+    # pobranie ilości stron
     last_page = max(pages) if pages else 1
     
-    print(last_page)
+    # # robocze
+    # print(last_page)
 
+    # pobranie rowerów z każdej strony
     for i in range(last_page):
         load_gravels_from_page(i+1)
 
