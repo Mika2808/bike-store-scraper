@@ -50,5 +50,5 @@ Każdy rower zapisany jest w formacie:
   "rating": "4.5",
   "shop": "Decathlon"
 }
-
+```
 Dzięki temu dane możemy szybko wczytać za pomocą biblioteki pandas i wyszukiwać nasze zachcianki
