@@ -26,22 +26,29 @@ def load_gravels_from_page(i):
     # pobranie rowerów i danych o nich
     products = []
 
+    # dla każdego roweru
     for item_div in soup.select("div.item.product"):
         input_tag = item_div.find("input", {"name": "dataLayerItem"})
         if input_tag:
+            # pobranie roweru
             json_str = input_tag["value"].replace("&quot;", '"')
             try:
+                # onwersja do jsona
                 product_data = json.loads(json_str)
+
+                # dodanie sklepu oraz url
+                product_data["shop"] = "centrumrowerowe"
+                product_data["url"] = url
+                
+                # załadowanie nowego produktu
                 products.append(product_data)
             except json.JSONDecodeError:
                 print("Błąd dekodowania JSON:", json_str[:100])
 
-    # zapis do pliku
-    with open("rowery.json", "a", encoding="utf-8") as f:
-        json.dump(products, f, ensure_ascii=False, indent=4)
-
     # info
     print(f"Pobrano {len(products)} produktów")
+    
+    return products
 
 # Centrum Rowerowe 
 def centrum_rowerowe():
@@ -77,11 +84,17 @@ def centrum_rowerowe():
     # pobranie ilości stron
     last_page = max(pages) if pages else 1
     
-    # # robocze
-    # print(last_page)
+    # info
+    print(f"Jest {last_page} stron z gravelami")
+    
+    # zmienne
+    all_products = []
 
     # pobranie rowerów z każdej strony
     for i in range(last_page):
-        load_gravels_from_page(i+1)
+        all_products.append(load_gravels_from_page(i+1))
+    
+    with open("rowery.json", "w", encoding="utf-8") as f:
+        json.dump(all_products, f, ensure_ascii=False, indent=2)
 
 centrum_rowerowe()
