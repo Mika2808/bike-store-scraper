@@ -30,18 +30,23 @@ def load_gravels_from_page_centrum_rowerowe(i, driver):
     for item_div in soup.select("div.item.product"):
         input_tag = item_div.find("input", {"name": "dataLayerItem"})
         if input_tag:
-            # pobranie roweru
             json_str = input_tag["value"].replace("&quot;", '"')
             try:
-                # onwersja do jsona
                 product_data = json.loads(json_str)
 
-                # dodanie sklepu oraz url
-                product_data["shop"] = "centrumrowerowe"
-                product_data["url"] = url
-                
+                # --- ujednolicenie do wspólnego formatu ---
+                unified_product = {
+                    "id": str(product_data.get("item_id") or ""),
+                    "brand": product_data.get("item_brand") or "",
+                    "name": product_data.get("item_name") or "",
+                    "url": product_data.get("url") or url,
+                    "price": float(str(product_data.get("price") or 0).replace(",", "").replace("\xa0", "")),
+                    "rating": str(product_data.get("rating") or ""),
+                    "shop": product_data.get("shop") or "centrumrowerowe"
+                }
+
                 # załadowanie nowego produktu
-                products.append(product_data)
+                products.append(unified_product)
             except json.JSONDecodeError:
                 print("Błąd dekodowania JSON:", json_str[:100])
 
@@ -88,7 +93,7 @@ def centrum_rowerowe(driver):
 
     # pobranie rowerów z każdej strony
     for i in range(last_page):
-        products.append(load_gravels_from_page_centrum_rowerowe(i+1, driver))
+        products.extend(load_gravels_from_page_centrum_rowerowe(i+1, driver))
     
     # zrócenie wszystich rowerów z danego sklepu
     return products
@@ -120,7 +125,7 @@ def decathlon(driver):
     # pobranie rowerów z każdej strony
 
     for i in range(last_page):
-        products.append(load_gravels_from_page_decathlon(i, driver))
+        products.extend(load_gravels_from_page_decathlon(i, driver))
 
     return products
 
@@ -186,8 +191,8 @@ def loading_gravels():
     all_products = []
 
     # Przeszukanie Centrum Rowerowe/ Decathlon
-    all_products.append(centrum_rowerowe(driver))
-    all_products.append(decathlon(driver))
+    all_products.extend(centrum_rowerowe(driver))
+    all_products.extend(decathlon(driver))
 
     # zapis do pliku
     with open("rowery.json", "w", encoding="utf-8") as f:
@@ -195,6 +200,8 @@ def loading_gravels():
 
     # wyłączenie silnika Chrome
     driver.quit()
+
+loading_gravels()
 
 # Wczytanie pliku JSON do Pythona
 with open('rowery.json', 'r', encoding='utf-8') as f:
@@ -206,3 +213,4 @@ df = pd.DataFrame(data)
 # Podgląd
 print(df.head())
 print (df.shape)
+df.info()
