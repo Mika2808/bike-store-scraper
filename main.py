@@ -5,6 +5,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 import json
 import re
+import pandas as pd
 
 def load_gravels_from_page_centrum_rowerowe(i, driver):
     # stworzenie odpowiedniego url
@@ -87,7 +88,7 @@ def centrum_rowerowe(driver):
 
     # pobranie rowerów z każdej strony
     for i in range(last_page):
-        products.append(load_gravels_from_page(i+1, driver))
+        products.append(load_gravels_from_page_centrum_rowerowe(i+1, driver))
     
     # zrócenie wszystich rowerów z danego sklepu
     return products
@@ -177,18 +178,31 @@ def load_gravels_from_page_decathlon(page, driver):
     
     return products
 
-# odpalenie drivera
-driver = webdriver.Chrome()
+def loading_gravels():
+    # odpalenie drivera
+    driver = webdriver.Chrome()
 
-# zmienna na rowery
-all_products = []
+    # zmienna na rowery
+    all_products = []
 
-# Przeszukanie Centrum Rowerowe/ Decathlon
-all_products.append(decathlon(driver))
+    # Przeszukanie Centrum Rowerowe/ Decathlon
+    all_products.append(centrum_rowerowe(driver))
+    all_products.append(decathlon(driver))
 
-# zapis do pliku
-with open("rowery.json", "w", encoding="utf-8") as f:
-    json.dump(all_products, f, ensure_ascii=False, indent=2)
+    # zapis do pliku
+    with open("rowery.json", "w", encoding="utf-8") as f:
+        json.dump(all_products, f, ensure_ascii=False, indent=2)
 
-# wyłączenie silnika Chrome
-driver.quit()
+    # wyłączenie silnika Chrome
+    driver.quit()
+
+# Wczytanie pliku JSON do Pythona
+with open('rowery.json', 'r', encoding='utf-8') as f:
+    data = json.load(f)
+
+# Zamiana na DataFrame
+df = pd.DataFrame(data)
+
+# Podgląd
+print(df.head())
+print (df.shape)
