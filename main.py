@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 import json
 import re
 import pandas as pd
+from datetime import datetime
 
 def load_gravels_from_page_centrum_rowerowe(i, driver):
     # stworzenie odpowiedniego url
@@ -42,7 +43,8 @@ def load_gravels_from_page_centrum_rowerowe(i, driver):
                     "url": product_data.get("url") or url,
                     "price": float(str(product_data.get("price") or 0).replace(",", "").replace("\xa0", "")),
                     "rating": str(product_data.get("rating") or ""),
-                    "shop": product_data.get("shop") or "centrumrowerowe"
+                    "shop": product_data.get("shop") or "centrumrowerowe",
+                    "date": datetime.now().strftime("%d %B %Y")
                 }
 
                 # załadowanie nowego produktu
@@ -174,7 +176,8 @@ def load_gravels_from_page_decathlon(page, driver):
             "url": url,
             "price": price,
             "rating": rating,
-            "shop": "Decathlon"
+            "shop": "Decathlon",
+            "date": datetime.now().strftime("%d %B %Y")
         }
         products.append(product)
 

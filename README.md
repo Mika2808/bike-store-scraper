@@ -51,4 +51,8 @@ Każdy rower zapisany jest w formacie:
   "shop": "Decathlon"
 }
 ```
+<<<<<<< HEAD
 Dzięki temu dane możemy szybko wczytać za pomocą biblioteki pandas i wyszukiwać nasze zachcianki
+=======
+Dzięki temu dane możemy szybko wczytać za pomocą biblioteki pandas i wyszukiwać nasze zachcianki
+>>>>>>> 3ee3c5d2e5873bc28077c524684c2b8c1dfa5aab
