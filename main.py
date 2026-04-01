@@ -44,7 +44,7 @@ def load_gravels_from_page_centrum_rowerowe(i, driver):
                     "price": float(str(product_data.get("price") or 0).replace(",", "").replace("\xa0", "")),
                     "rating": str(product_data.get("rating") or ""),
                     "shop": product_data.get("shop") or "centrumrowerowe",
-                    "date": datetime.now().strftime("%d %B %Y")
+                    "date": datetime.now().strftime("%d.%m.%y")
                 }
 
                 # załadowanie nowego produktu
@@ -177,7 +177,7 @@ def load_gravels_from_page_decathlon(page, driver):
             "price": price,
             "rating": rating,
             "shop": "Decathlon",
-            "date": datetime.now().strftime("%d %B %Y")
+            "date": datetime.now().strftime("%d.%m.%y")
         }
         products.append(product)
 
@@ -198,7 +198,8 @@ def loading_gravels():
     all_products.extend(decathlon(driver))
 
     # zapis do pliku
-    with open("rowery.json", "w", encoding="utf-8") as f:
+    filename = f"rowery_{datetime.now().strftime('%d.%m.%y')}.json"
+    with open(filename, "w", encoding="utf-8") as f:
         json.dump(all_products, f, ensure_ascii=False, indent=2)
 
     # wyłączenie silnika Chrome
@@ -207,7 +208,8 @@ def loading_gravels():
 loading_gravels()
 
 # Wczytanie pliku JSON do Pythona
-with open('rowery.json', 'r', encoding='utf-8') as f:
+filename = f"rowery_{datetime.now().strftime('%d.%m.%y')}.json"
+with open(filename, 'r', encoding='utf-8') as f:
     data = json.load(f)
 
 # Zamiana na DataFrame
